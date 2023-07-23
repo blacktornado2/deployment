@@ -1,0 +1,88 @@
+If any of the following command is not working 
+
+* while installing any package with apt, if we use -y flag, then all the questions will be answered yes in the installation and user won't be prompted for anything
+
+    ------------- FIREWALLS -------------
+    * ufw is the default firewall for Ubuntu, firewalld is default firewall for CentOS, Fedora, other RH Linux distros
+    * firewall-cmd is used to manage firewalld in CentOS
+
+    UFW - Uncomplicated Firewall
+    - ufw --version  :-> check if ufw is installed or not
+    - sudo apt-get install ufw  :-> install ufw(after sudp apt-get update)
+    - ufw status  :-> see the status of ufw
+    - ufw status verbose  :-> see the status of ufw(more details)
+
+    * ufw rules can be added in 2 ways: port number or service
+    - ufw allow OpenSSH  :-> allow the ssh (port no. 22)
+    - ufw allow 22  :-> allow the port number 22(ssh) 
+    - ufw deny 500  :-> deny traffic on port 500
+    - ufw enable  :-> enable firewall (This will block all connections to the ip except the allowed one ports)
+    - ufw disable  :-> disable firewall
+
+    * allow HTTP and HTTPS through firewall to be able to continue using them from browser
+
+
+----------------- SSH ----------------- 
+SSH - Secure Shell
+- ssh <user>@<ip>  :-> Login through ssh to the following ip and username
+- ssh -p <portNumber> <user>@<ip>  :-> If the default ssh port is not 22
+- GIT_SSH_COMMAND="ssh -i <publicKeyPath>" git pull  :-> pull the code from the repo, provided that the keys are already added to the repo
+* the default port for ssh is 22, to change it, we have to edit the file /etc/ssh/sshd_config, then use: service ssh restart
+
+
+SSH Keygen
+- ssh-keygen   :- Generate public-private key using ssh, rest of the options will be asked step-by-step
+- ssh-keygen -f <filePath> -t <algorithm> -C <comment>
+
+User
+- adduser <username>  :-> add a user with the given username, and set the password of this user
+- usermod -aG sudo <username>  :-> the given user will have root access
+- sudo su  :-> Elevate the access of current user to root user (only if he is already having root access)
+- exit  :-> After giving the normal user root access, go back to being a normal user
+
+----------------- APACHE2 (httpd) -----------------
+Apache2 is by known by the name httpd(HTTP daemon) in CentOS
+- apache2 -v  :-> version of apache2
+- sudo apt install apache2  :-> install apache2 (httpd in case of CentOS)
+- ufw allow "Apache Full"  :-> allow both http and https
+- npm install -g pm2  :-> install pm2 (process manager) globally
+- service apache2 status :-> see status of apache2(also check by typing i.p. in browser's url)
+- service apache2 restart :-> restart the server
+* default page of apache -> /var/www/html/index.html
+- systemctl status apache2 :-> check the status
+
+- apachectl configtest :-> test the syntax of apache configuration files
+- httpd -t :-> test the syntax of conf. files in CentOS
+
+* /etc is the dir. where system configurations are stored
+* In /etc/apache2, apache2 configuration files are stored
+* /etc/apache2/apache2.conf is the main configuration file in Ubuntu
+* /etc/httpd/conf/httpd.conf is the main configuration file in CentOS
+
+* Create our Virtual Host File on /etc/apache2/sites-available/<domain>.conf 
+* Add the following code in Virtual Host file  :
+    <VirtualHost *:80>
+        ServerName www.bhardwajankit.com
+        ServerAlias bhardwajankit.com
+        ServerAdmin ankitb@one.com
+        DocumentRoot /var/www/<projectDirectory>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>
+- a2ensite <configFilePath> : enable configuration file for domain
+- service apache2 restart : restart the server after virtual host file
+
+
+---------------------------------Install SSL certificate for HTTPS-------------------------------
+- apt install certbot python3-certbot-apache : install the specified packages
+- certbot --apache : obtain a SSL certificate
+- systemctl status cerbot.timer : check the status of certbot
+- certbot renew --dry-run : dry run SSL renewal
+
+- hostnamectl : See the hostname of our system
+- hostnamectl set-hostname ankitComputer : Set the hostname of our system to 'ankitComputer'
+
+Copy files from local to remote(run this on Windows):
+    scp -> securely copying files
+    scp -P <port> <sourceFilePath> <destinationPath>
+    scp -P 22 myApp.zip root@123.456.789.100:/var/www
